@@ -4,12 +4,14 @@ from os import path
 from datetime import datetime
 from functools import partial
 
+from xml.etree import ElementTree as ET
+
 import scrapy
 from scrapy import signals
 
-from estacoes_dict import estacoes
-
 from selenium import webdriver
+
+from estacoes_dict import estacoes
 
 
 class EstacaoSpider(scrapy.Spider):
@@ -23,11 +25,22 @@ class EstacaoSpider(scrapy.Spider):
             yield scrapy.Request(
                     f'https://www.cgesp.org/v3/estacao.jsp?POSTO={codigo}',
                     callback=partial(self.parse, estacao=estacao))
+        # yield scrapy.Request(
+        #             f'https://www.cgesp.org/v3/estacao.jsp?POSTO={635}',
+        #             callback=partial(self.parse, estacao='Pinheiros'))
+
+    # def extract_table(self, body):
+    #     table = ET.XML(body).xpath("body/table")[0]
+    #     rows = iter(table)
+    #     headers = [col.text for col in next(rows)]
+    #     for row in rows:
+    #         values = [col.text for col in row]
+    #     print(dict(zip(headers, values)))
 
     def parse(self, response, estacao=''):
-        self.driver.get(response.url)
-        self.driver.switch_to.frame('frm-historico')
         
+        # self.extract_table(response.body)
+
         table_rows = self.driver.find_elements_by_xpath('//*[@id="tbDadosTelem"]//tr')
         
         linhas = []
