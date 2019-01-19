@@ -75,7 +75,7 @@ Neste desafio você deverá obter os dados das estações meteorológicas de Sã
 ### Perguntas e Respostas
 
     - O que você faria caso quisesse obter essas informações de forma recorrente, ou seja, todo dia?
-        Como eu desenvolvi a solução usando Scrapy, poderia usar o Sprapyhub para executar automativamente a ingestão dos dados. Outra possibilidade seria usar o Airflow ou o (mais simples e menos resiliente) Crontab.
+        Como eu desenvolvi a solução usando Scrapy, poderia usar o Sprapyhub para executar automaticamente a ingestão dos dados. Outra possibilidade seria usar o Airflow ou o (mais simples e menos resiliente) Crontab.
 
     - Como você validaria se as respostas obtidas do crawler estão corretas ou não?
         * Verificar se a estrutura do site se manteve a mesma em que me baseei no desenvolvimento da solução.
@@ -83,8 +83,7 @@ Neste desafio você deverá obter os dados das estações meteorológicas de Sã
         * Buscar em outras fontes os mesmos valores e verificar se os resultados são semelhantes
 
     - O que você faria se tivesse mais tempo para resolver o desafio?
-        Tentaria obter os dados com uma ligação mais forte entre coluna e celula, isso possibilitaria obter os dados  de linhas incompletas.
-        Numa situação real poderia também armazenar os dados e/ou criar um dashboard para visualização. Isso depende do que traria valor projeto.
+        Numa situação real poderia armazenar os dados e/ou criar um dashboard para visualização, mas isso depende do que traria mais valor ao projeto.
 
     - Como você resolveria esse desafio e/ou as perguntas caso tivesse acesso aos recursos da Amazon Web Services, Azure ou Google Cloud?
         Além do que já citei, armazenamento dos dados na núvem, disponilizar uma API para acessa-los.

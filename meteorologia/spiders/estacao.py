@@ -3,8 +3,9 @@ import logging
 from os import path
 from datetime import datetime
 from functools import partial
+from itertools import cycle
 
-from xml.etree import ElementTree as ET
+from lxml import etree as ET
 
 import scrapy
 from scrapy import signals
@@ -19,61 +20,56 @@ class EstacaoSpider(scrapy.Spider):
 
     def __init__(self, name=None, **kwargs):
         self.driver = webdriver.Firefox()
-    
+
     def start_requests(self):
         for estacao, codigo in estacoes.items():
             yield scrapy.Request(
                     f'https://www.cgesp.org/v3/estacao.jsp?POSTO={codigo}',
                     callback=partial(self.parse, estacao=estacao))
         # yield scrapy.Request(
-        #             f'https://www.cgesp.org/v3/estacao.jsp?POSTO={635}',
-        #             callback=partial(self.parse, estacao='Pinheiros'))
+        #     f'https://www.cgesp.org/v3/estacao.jsp?POSTO={635}',
+        #     callback=partial(self.parse, estacao='Pinheiros'))
 
-    # def extract_table(self, body):
-    #     table = ET.XML(body).xpath("body/table")[0]
-    #     rows = iter(table)
-    #     headers = [col.text for col in next(rows)]
-    #     for row in rows:
-    #         values = [col.text for col in row]
-    #     print(dict(zip(headers, values)))
+    def extract_table(self, body):
+        tables = ET.HTML(body).xpath('//body/table/tbody')
+
+        colunas = []
+        # linhas = []
+        for table in tables:
+            for tr in table.xpath('tr'):
+                linha = []
+                for th in tr.xpath('th'):
+                    colunas.append(th.text) 
+                for td in tr.xpath('td'):
+                    if not td.text or (td.text != None and not td.text.strip()):
+                        for i in td.xpath('table/tbody/tr/td'):
+                            linha.append(i.text)
+                            break
+                    else:
+                        linha.append(td.text.strip())
+                if linha:
+                    yield dict(zip(colunas, linha))
+
+        # [print(l) for l in linhas]
+        # return [dict(zip(colunas, linha)) for linha in linhas]
 
     def parse(self, response, estacao=''):
-        
-        # self.extract_table(response.body)
+        for row in self.extract_table(response.body):
+            yield {estacao: self.parse_row(row)}
 
-        table_rows = self.driver.find_elements_by_xpath('//*[@id="tbDadosTelem"]//tr')
-        
-        linhas = []
-        colunas = self.build_colunas(table_rows[0].text)
-
-        for row in table_rows[1:]:
-            text = row.text.split('\n')
-            if len(text) > 1:
-                if len(text) == len(colunas) + 1:
-                    item = dict(zip(['timestamp'] + colunas, text))
-                    item['timestamp'] = self.epoch(item['timestamp'])
-                    for key in colunas:
-                        item[key] = float(item[key])
-                    linhas.append(item)
-                else:
-                    self.log(
-                        f'\n\tEstação: {estacao}'+
-                        f'\n\tLinha inconsistente: {text}' +
-                        f'\n\tEndereço: {response.url}'+
-                        f'\n\tColunas esperadas:{["Data"] + colunas}\n\n',
-                        logging.ERROR)
-        yield {estacao:linhas}
-
-    def build_colunas(self, header_line):
-        mapa_colunas = {'Chuva(mm':'chuva', 'Vel.VT(m/s':'vel_vento',
-                        'Dir.VT(o':'dir_vento', 'Temp(oC':'temp', 
-                        'Umid.Rel.(%':'umidade', 'Pressão(mb':'pressao', 
-                        'Sens. Térmica(°C':'sens_termica', 
-                        'PressÃ£o(mb':'pressao'}
-        
-        header = header_line[5:]
-        return [mapa_colunas[c.strip()] 
-                    for c in header.split(')') if c.strip()]
+    def parse_row(self, row):
+        mapa_colunas = {'Chuva(mm)': 'chuva', 'Vel.VT(m/s)': 'vel_vento',
+                        'Dir.VT(o)': 'dir_vento', 'Temp(oC)': 'temp',
+                        'Umid.Rel.(%)': 'umidade', 'Pressão(mb)': 'pressao',
+                        'Sens. Térmica(°C)': 'sens_termica',
+                        'PressÃ£o(mb)': 'pressao', 'Data': 'timestamp'}
+        parsed = dict()
+        for k,v in row.items():
+            v = v.strip()
+            if v and k != 'Data':
+                v = float(v)
+            parsed[mapa_colunas[k]] = v if k != 'Data' else self.epoch(v)
+        return parsed
 
     def epoch(self, timestamp):
         '''
@@ -105,4 +101,3 @@ class EstacaoSpider(scrapy.Spider):
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-    

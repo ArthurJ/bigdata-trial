@@ -20,5 +20,7 @@ class MeteorologiaPipeline(object):
         self.file.close()
 
     def process_item(self, item, spider):
-        self._d.update(item)
+        lista = self._d.get(list(item.keys())[0], [])
+        lista.append(list(item.values())[0])
+        self._d[list(item.keys())[0]] = lista
         return item
