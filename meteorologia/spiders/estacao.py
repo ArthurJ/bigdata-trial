@@ -66,7 +66,9 @@ class EstacaoSpider(scrapy.Spider):
         parsed = dict()
         for k,v in row.items():
             v = v.strip()
-            if v and k != 'Data':
+            if not v:
+                v = None
+            elif k != 'Data':
                 v = float(v)
             parsed[mapa_colunas[k]] = v if k != 'Data' else self.epoch(v)
         return parsed
