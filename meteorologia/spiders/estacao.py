@@ -24,8 +24,8 @@ class EstacaoSpider(scrapy.Spider):
     def start_requests(self):
         for estacao, codigo in estacoes.items():
             yield scrapy.Request(
-                    f'https://www.cgesp.org/v3/estacao.jsp?POSTO={codigo}',
-                    callback=partial(self.parse, estacao=estacao))
+                f'https://www.cgesp.org/v3/estacao.jsp?POSTO={codigo}',
+                callback=partial(self.parse, estacao=estacao))
         # yield scrapy.Request(
         #     f'https://www.cgesp.org/v3/estacao.jsp?POSTO={635}',
         #     callback=partial(self.parse, estacao='Pinheiros'))
@@ -34,12 +34,11 @@ class EstacaoSpider(scrapy.Spider):
         tables = ET.HTML(body).xpath('//body/table/tbody')
 
         colunas = []
-        # linhas = []
         for table in tables:
             for tr in table.xpath('tr'):
                 linha = []
                 for th in tr.xpath('th'):
-                    colunas.append(th.text) 
+                    colunas.append(th.text)
                 for td in tr.xpath('td'):
                     if not td.text or (td.text != None and not td.text.strip()):
                         for i in td.xpath('table/tbody/tr/td'):
@@ -49,9 +48,6 @@ class EstacaoSpider(scrapy.Spider):
                         linha.append(td.text.strip())
                 if linha:
                     yield dict(zip(colunas, linha))
-
-        # [print(l) for l in linhas]
-        # return [dict(zip(colunas, linha)) for linha in linhas]
 
     def parse(self, response, estacao=''):
         for row in self.extract_table(response.body):
@@ -64,7 +60,7 @@ class EstacaoSpider(scrapy.Spider):
                         'Sens. Térmica(°C)': 'sens_termica',
                         'PressÃ£o(mb)': 'pressao', 'Data': 'timestamp'}
         parsed = dict()
-        for k,v in row.items():
+        for k, v in row.items():
             v = v.strip()
             if not v:
                 v = None

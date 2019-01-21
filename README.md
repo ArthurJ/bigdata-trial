@@ -25,7 +25,7 @@ Os resultados serão escritos no arquivo `resultados.json`
 Neste desafio você deverá obter os dados das estações meteorológicas de São Paulo através do site: https://www.cgesp.org/v3/estacoes-meteorologicas.jsp . Seu crawler deverá retornar um objeto JSON contendo os seguintes dados de todas as estações meteorológicas nas últimas 24 horas: timestamp (convertido para epoch), chuva, velocidade do vento, direção do vento, temperatura, umidade relativa e pressão.
 
 ### Exemplo de resultado esperado do crawler:
-
+```
 {
   "Penha": [
     {
@@ -71,6 +71,7 @@ Neste desafio você deverá obter os dados das estações meteorológicas de Sã
   ],
   ...
 }
+```
 
 ### Perguntas e Respostas
 
