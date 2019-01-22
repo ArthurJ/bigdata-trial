@@ -74,7 +74,8 @@ class MeteorologiaDownloaderMiddleware(object):
 
     def process_request(self, request, spider):
         spider.driver.get(request.url)
-        WebDriverWait(spider.driver, 10).until(EC.presence_of_element_located((By.ID, "frm-historico")))
+        WebDriverWait(spider.driver, 10)\
+            .until(EC.presence_of_element_located((By.ID, "frm-historico")))
         spider.driver.switch_to.frame('frm-historico')
         return HtmlResponse(spider.driver.current_url, 
                             body=spider.driver.page_source, 
