@@ -1,16 +1,11 @@
-import json
-import logging
-from os import path
 from datetime import datetime
 from functools import partial
-from itertools import cycle
-
-from lxml import etree as ET
 
 import scrapy
 from scrapy import signals
 
 from selenium import webdriver
+from lxml import etree as ET
 
 from estacoes_dict import estacoes
 

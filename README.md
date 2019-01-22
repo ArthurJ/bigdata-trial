@@ -1,6 +1,6 @@
 # Crawling
 
-O código precisa ser executado em Python 3.7+
+O código precisa ser executado usando Python 3.7+
 
 ### Instalando pacotes necessários
 `$ pip install -r requirements.txt`
