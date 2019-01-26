@@ -89,10 +89,3 @@ Neste desafio você deverá obter os dados das estações meteorológicas de Sã
 
     - Como você resolveria esse desafio e/ou as perguntas caso tivesse acesso aos recursos da Amazon Web Services, Azure ou Google Cloud?
         Além do que já citei, armazenamento dos dados na núvem, disponilizar uma API para acessa-los.
-
-### Você deverá entregar
-
-    Você deverá criar um repositório Git privado no Bitbucket e compartilhá-lo com o usuário big-data-brasil.
-    Seus códigos a serem avaliados deverão estar contidos na branch master do seu repositório.
-    Você deverá criar um arquivo Readme.md contendo a documentação do crawler. Neste arquivo deverão estar respondidas as perguntas propostas que poderão ser respondidas separadamente ou em conjunto.
-    Você será avaliado pela qualidade e efetividade do seu código. Os códigos deverão estar com comentários e bem organizados. Sempre que possível, testes unitários, de integração e linters são bem vindos.
