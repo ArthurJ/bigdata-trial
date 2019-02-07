@@ -72,20 +72,3 @@ Neste desafio você deverá obter os dados das estações meteorológicas de Sã
   ...
 }
 ```
-
-### Perguntas e Respostas
-
-    - O que você faria caso quisesse obter essas informações de forma recorrente, ou seja, todo dia?
-        Como eu desenvolvi a solução usando Scrapy, poderia usar o Sprapyhub para executar automaticamente a ingestão dos dados. Outra possibilidade seria usar o Airflow ou o (mais simples e menos resiliente) Crontab.
-
-    - Como você validaria se as respostas obtidas do crawler estão corretas ou não?
-        * Verificar se a estrutura do site se manteve a mesma em que me baseei no desenvolvimento da solução.
-        * Verificar se os dados são do tipo esperado, e se estão dentro de uma faixa esperada (São Paulo dificilmente teria valores negativos, por exemplo)
-        * Buscar em outras fontes os mesmos valores e verificar se os resultados são semelhantes
-
-    - O que você faria se tivesse mais tempo para resolver o desafio?
-        Escolhi usar o Selenium para acessar os endereços devido a presença do iframe na página contendo a tabela com as informações, o que implica em processar javascript, o que o Scrapy sozinho não seria capaz de fazer. A vantagem do Selenium é sua versatilidade, porém, na configuração atual o Selenium é um gargalo para o Scrapy, por não permitir o acesso as páginas de modo concorrente que o Scrapy sozinho faria. Se o número de páginas a serem acessadas fosse muito maior do que o proposto no exercício, usar o Selenium combinado com Docker para trabalho em paralelo, ou substituir o Selenium por uma outra solução compatível com o Scrapy capaz de acessar os dados do iframe seria um bom investimento de tempo.
-        Outras opções para melhorar essa implementação poderia ser armazenar os dados e/ou criar um dashboard para visualização, mas isso depende do que traria mais valor ao projeto.
-
-    - Como você resolveria esse desafio e/ou as perguntas caso tivesse acesso aos recursos da Amazon Web Services, Azure ou Google Cloud?
-        Além do que já citei, armazenamento dos dados na núvem, disponilizar uma API para acessa-los.

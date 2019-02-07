@@ -4,7 +4,6 @@ from functools import partial
 import scrapy
 from scrapy import signals
 
-from selenium import webdriver
 from lxml import etree as ET
 
 from estacoes_dict import estacoes
@@ -13,36 +12,29 @@ from estacoes_dict import estacoes
 class EstacaoSpider(scrapy.Spider):
     name = 'estacoes'
 
-    def __init__(self, name=None, **kwargs):
-        self.driver = webdriver.Firefox()
-
     def start_requests(self):
         for estacao, codigo in estacoes.items():
             yield scrapy.Request(
-                f'https://www.cgesp.org/v3/estacao.jsp?POSTO={codigo}',
-                callback=partial(self.parse, estacao=estacao))
-        # yield scrapy.Request(
-        #     f'https://www.cgesp.org/v3/estacao.jsp?POSTO={635}',
-        #     callback=partial(self.parse, estacao='Pinheiros'))
+            f'https://www.saisp.br/geral/processo_cge.jsp?WHICHCHANNEL={codigo}',
+            callback=partial(self.parse, estacao=estacao),
+            headers={'referer': f'https://www.cgesp.org/v3/estacao.jsp?POSTO={codigo}'})
+            # break
 
     def extract_table(self, body):
-        tables = ET.HTML(body).xpath('//body/table/tbody')
-
         colunas = []
-        for table in tables:
-            for tr in table.xpath('tr'):
-                linha = []
-                for th in tr.xpath('th'):
-                    colunas.append(th.text)
-                for td in tr.xpath('td'):
-                    if not td.text or (td.text != None and not td.text.strip()):
-                        for i in td.xpath('table/tbody/tr/td'):
-                            linha.append(i.text)
-                            break
-                    else:
-                        linha.append(td.text.strip())
-                if linha:
-                    yield dict(zip(colunas, linha))
+        for th in ET.HTML(body).xpath('//th'):
+            colunas.append(th.text)
+
+        trs = ET.HTML(body).xpath("//tbody[@id='tbTelemBody']/tr")
+        for tr in trs:
+            linha = []
+            linha.append(tr.getchildren()[0].text)
+            for td in tr.getchildren()[1:]:
+                linha.append(td.getchildren()[0]
+                                .getchildren()[0]
+                                .getchildren()[0].text)
+            if linha:
+                yield dict(zip(colunas, linha))
 
     def parse(self, response, estacao=''):
         for row in self.extract_table(response.body):
@@ -78,17 +70,6 @@ class EstacaoSpider(scrapy.Spider):
         t[1] = str(meses[t[1]])
         t = int(datetime.strptime(' '.join(t), '%d %m %Y %H:%M').timestamp())
         return t
-
-    def spider_closed(self, spider):
-        self.driver.close()
-        self.driver.quit()
-
-    @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        spider = super(EstacaoSpider, cls).from_crawler(
-            crawler, *args, **kwargs)
-        crawler.signals.connect(spider.spider_closed, signals.spider_closed)
-        return spider
 
 
 if __name__ == '__main__':

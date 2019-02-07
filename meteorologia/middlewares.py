@@ -55,11 +55,6 @@ class MeteorologiaSpiderMiddleware(object):
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
-from scrapy.http import HtmlResponse
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-
 class MeteorologiaDownloaderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the downloader middleware does not modify the
@@ -73,13 +68,7 @@ class MeteorologiaDownloaderMiddleware(object):
         return s
 
     def process_request(self, request, spider):
-        spider.driver.get(request.url)
-        WebDriverWait(spider.driver, 10)\
-            .until(EC.presence_of_element_located((By.ID, "frm-historico")))
-        spider.driver.switch_to.frame('frm-historico')
-        return HtmlResponse(spider.driver.current_url, 
-                            body=spider.driver.page_source, 
-                            encoding='utf-8', request=request)
+        return None
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.
